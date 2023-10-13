@@ -29,7 +29,7 @@ This VS Code extension provides a simple command to fetch and copy the current l
 
 ## Known Issues
 
-None at the moment.
+None at the moment. If you encounter any problems or have suggestions, please [open an issue](<https://github.com/pkaya89/vs-code-get-current-line>).
 
 ## Release Notes
 
