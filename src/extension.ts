@@ -1,31 +1,44 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
-import * as path from 'path';
+import * as vscode from "vscode";
+import * as path from "path";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-    let disposable = vscode.commands.registerCommand('extension.getCurrentLineNumber', () => {
-        const editor = vscode.window.activeTextEditor;
-        if (editor) {
-            const lineNumber = editor.selection.active.line + 1;
-            
-            // Get the current file's full path
-            const fullPath = editor.document.fileName;
-            
-            // Extract the filename from the full path
-            const fileName = path.basename(fullPath);
+  let disposable = vscode.commands.registerCommand(
+    "extension.getCurrentLineNumber",
+    () => {
+      const editor = vscode.window.activeTextEditor;
+      if (editor) {
+        const lineNumber = editor.selection.active.line + 1;
 
-            // Construct a string containing both the file name and the line number separated by |
-            const output = `${fileName}|L:${lineNumber}`;
+        // Get the current file's full path
+        const fullPath = editor.document.fileName;
 
-            // Write the string to the clipboard
-            vscode.env.clipboard.writeText(output);
-            vscode.window.showInformationMessage(`Copied to clipboard: ${output}`);
-        }
-    });
+        // Extract the filename from the full path
+        const fileName = path.basename(fullPath);
 
-    context.subscriptions.push(disposable);
+        // Construct a string containing both the file name and the line number separated by |
+        const output = `${fileName} | L:${lineNumber}`;
+        const consoleLogStatement = `console.log('${output}');`;
+
+        // Insert the consoleLogStatement at the current cursor position
+        editor.edit((editBuilder) => {
+          // Replace the current selection with the log statement
+          editBuilder.replace(editor.selection, consoleLogStatement);
+
+          // Insert the log statement without replacing the current selection
+          // editBuilder.insert(editor.selection.active, consoleLogStatement);
+        });
+
+        const newPosition = editor.selection.active.translate(0, -4); // Moves cursor 4 characters to the left.
+        const newSelection = new vscode.Selection(newPosition, newPosition);
+        editor.selection = newSelection;
+
+        vscode.window.showInformationMessage(
+          `Inserted: ${consoleLogStatement}`
+        );
+      }
+    }
+  );
+
+  context.subscriptions.push(disposable);
 }
 export function deactivate() {}
