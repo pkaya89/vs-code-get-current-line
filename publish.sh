@@ -30,7 +30,7 @@ compile_extension() {
   npm run compile # You may need to customize this based on your project's build script
 }
 
-getPackageVersion() {
+getCurrentPackageVersion() {
   PACKAGE_VERSION="$(echo "$(cat package.json |
     grep version |
     head -1 |
@@ -99,24 +99,32 @@ incrementVersion() {
   fi
 
   NEXT_PACKAGE_VERSION="${version[0]}.${version[1]}.${version[2]}"
-  jq --arg version "$NEXT_PACKAGE_VERSION" '.version=$version' "$PACKAGE_JSON" >"$PACKAGE_JSON.tmp" && mv "$PACKAGE_JSON.tmp" "$PACKAGE_JSON"
+
+  # Replace the old version with the new version in package.json
+  sed -i.bak -E "s/\"version\": \"([^\"]+)\"/\"version\": \"$NEXT_PACKAGE_VERSION\"/" package.json
 
   echo "\nNext package version is ${BOLD}$NEXT_PACKAGE_VERSION${BOLD_RESET}\n"
 }
 
 check_vsce_installed
 compile_extension
-getPackageVersion
-getVersionNumber
-incrementVersion $PACKAGE_VERSION
+
+read -p "Do you want to change the version? [y/n]" change_version_answer
+
+if [[ $change_version_answer == "y" || $change_version_answer == "" ]]; then
+  getCurrentPackageVersion
+  getVersionNumber
+  incrementVersion $PACKAGE_VERSION
+fi
 
 read -p "Do you want to package the extension? [y/n]: " package_answer
-if [[ $package_answer == "y" ]]; then
+if [[ $package_answer == "y" || $package_answer == "" ]]; then
   vsce package
 fi
 
-read -p "Do you want to publish the extension? [y/n]: " publish_answer
-if [[ $publish_answer == "y" ]]; then
+read -p "Do you want to publish the extension? [N/y]: " publish_answer
+
+if [[ $publish_answer == "y" || $publish_answer == "" ]]; then
   vsce publish
 fi
 
