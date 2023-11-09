@@ -3,7 +3,7 @@ import * as path from "path";
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
-    "extension.getCurrentLineNumber",
+    "extension.logCurrentLineNumber",
     () => {
       const editor = vscode.window.activeTextEditor;
       if (editor) {
@@ -17,20 +17,25 @@ export function activate(context: vscode.ExtensionContext) {
 
         // Construct a string containing both the file name and the line number separated by |
         const output = `${fileName} | L:${lineNumber}`;
-        const consoleLogStatement = `console.log('${output}');`;
+        const consoleLogStatement = `console.log('${output} ');`;
 
-        // Insert the consoleLogStatement at the current cursor position
-        editor.edit((editBuilder) => {
-          // Replace the current selection with the log statement
-          editBuilder.replace(editor.selection, consoleLogStatement);
-
-          // Insert the log statement without replacing the current selection
-          // editBuilder.insert(editor.selection.active, consoleLogStatement);
-        });
-
-        const newPosition = editor.selection.active.translate(0, -4); // Moves cursor 4 characters to the left.
-        const newSelection = new vscode.Selection(newPosition, newPosition);
-        editor.selection = newSelection;
+        editor
+          .edit((editBuilder) => {
+            // Replace the current selection with the log statement
+            editBuilder.replace(editor.selection, consoleLogStatement);
+            // Insert the log statement without replacing the current selection
+            // editBuilder.insert(editor.selection.active, consoleLogStatement);
+          })
+          .then((success) => {
+            if (success) {
+              const newPosition = editor.selection.active.translate(0, -3); // Moves cursor 3 characters to the left.
+              const newSelection = new vscode.Selection(
+                newPosition,
+                newPosition
+              );
+              editor.selection = newSelection;
+            }
+          });
 
         vscode.window.showInformationMessage(
           `Inserted: ${consoleLogStatement}`

@@ -122,10 +122,10 @@ if [[ $package_answer == "y" || $package_answer == "" ]]; then
   vsce package
 fi
 
-read -p "Do you want to publish the extension? [N/y]: " publish_answer
+# read -p "Do you want to publish the extension? [N/y]: " publish_answer
 
-if [[ $publish_answer == "y" || $publish_answer == "" ]]; then
-  vsce publish
-fi
+# if [[ $publish_answer == "y" || $publish_answer == "" ]]; then
+#   vsce publish
+# fi
 
 echo "Done! Remember to update the extension in VS Code."

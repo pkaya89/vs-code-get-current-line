@@ -2,7 +2,7 @@
   "name": "get-current-line",
   "displayName": "get-current-line",
   "description": "Get current line",
-  "version": "1.2.1",
+  "version": "1.2.4",
   "engines": {
     "vscode": "^1.83.0"
   },
@@ -14,7 +14,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.getCurrentLineNumber",
+        "command": "extension.logCurrentLineNumber",
         "title": "Get Current Line Number"
       }
     ]
